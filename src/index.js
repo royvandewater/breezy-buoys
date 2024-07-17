@@ -8,35 +8,20 @@ import {
   PolygonCollider,
   vec,
 } from "excalibur";
-import { BoatComponent, WindComponent, WindPushesBoatSystem } from "./wind.js";
+import { WindComponent, WindPushesSailSystem } from "./wind.js";
+import { Boat, SailPushesBoatSystem } from "./boat.js";
 
 const game = new Engine({
   displayMode: DisplayMode.FillScreen,
+  fixedUpdateFps: 30,
 });
 game.start();
 
-const boatPoints = [
-  vec(0, 0),
-  vec(20, 40),
-  vec(20, 80),
-  vec(-20, 80),
-  vec(-20, 40),
-];
-const boat = new Actor({
-  pos: vec(game.halfDrawWidth, game.halfDrawHeight),
-  collider: new PolygonCollider({ points: boatPoints }),
-});
-boat.addComponent(new BoatComponent());
-const boatGraphic = new Polygon({
-  points: boatPoints,
-  color: Color.Green,
-});
-boat.graphics.use(boatGraphic);
-
-game.currentScene.add(boat);
+game.currentScene.add(new Boat());
 
 const world = game.currentScene.world;
 
 const wind = new Entity({ components: [new WindComponent()] });
 world.entityManager.addEntity(wind);
-world.systemManager.addSystem(WindPushesBoatSystem);
+world.systemManager.addSystem(WindPushesSailSystem);
+world.systemManager.addSystem(SailPushesBoatSystem);
