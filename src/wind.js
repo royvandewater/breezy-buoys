@@ -18,6 +18,7 @@ export class WindComponent extends Component {
 }
 
 export class WindPushesSailSystem extends System {
+  static windImpulseMultiplier = 10;
   systemType = SystemType.Update;
 
   /**
@@ -40,7 +41,9 @@ export class WindPushesSailSystem extends System {
 
         const magnitude = Math.abs(Math.cos(wind.direction - body.rotation));
 
-        sail.force = windVector.scale(magnitude);
+        sail.impulse = windVector.scale(
+          magnitude * WindPushesSailSystem.windImpulseMultiplier
+        );
       }
     }
   }
