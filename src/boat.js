@@ -113,15 +113,18 @@ export class ResolveBoatForces extends System {
       // calculate the portion of the impulse that is parallel to the keel
       const parallel = impulse.dot(keel);
 
-      const force = keel.scale(parallel);
+      const parallelForce = keel.scale(parallel);
+      body.vel = body.vel.add(parallelForce);
 
-      // Debug.drawLine(body.pos, body.pos.add(impulse), { color: Color.Black });
-      // Debug.drawLine(body.pos, body.pos.add(force), {
-      //   color: Color.Orange,
-      // });
+      // calculate the portion of the impulse that is perpendicular to the keel
+      const perpendicular = impulse.dot(keel.rotate(Math.PI / 2));
+      // reduce the perpendicular force by 90% to simulate the keel's resistance to sideways forces
+      const perpendicularForce = keel
+        .rotate(Math.PI / 2)
+        .scale(perpendicular)
+        .scale(0.1);
 
-      // apply the force to the boat
-      body.vel = body.vel.add(force);
+      body.vel = body.vel.add(perpendicularForce);
 
       // clear the boat impulses
       boat.impulses = [];
