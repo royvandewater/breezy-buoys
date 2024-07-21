@@ -10,13 +10,16 @@ import {
   SolverStrategy,
   vec,
 } from "excalibur";
-import { WindComponent, WindPushesSailSystem } from "./wind.js";
+import { WindComponent } from "./wind.js";
 import {
   ApplyDragToBoatSystem,
   Boat,
+  DebugWindPushesSailSystem,
   ResolveBoatForces,
   SailPushesBoatSystem,
+  WindPushesSailSystem,
 } from "./boat.js";
+import { ControlSystem } from "./controls.js";
 
 const game = new Engine({
   displayMode: DisplayMode.FillScreen,
@@ -39,3 +42,5 @@ world.systemManager.addSystem(WindPushesSailSystem);
 world.systemManager.addSystem(SailPushesBoatSystem);
 world.systemManager.addSystem(ResolveBoatForces);
 world.systemManager.addSystem(ApplyDragToBoatSystem);
+world.systemManager.addSystem(ControlSystem);
+world.systemManager.addSystem(DebugWindPushesSailSystem);

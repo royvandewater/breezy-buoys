@@ -15,6 +15,7 @@ import {
   vec,
   Vector,
 } from "excalibur";
+import { WindComponent } from "./wind.js";
 
 const hullPoints = [
   vec(0, 0),
@@ -28,6 +29,7 @@ export class BoatComponent extends Component {
   constructor() {
     super();
     this.impulses = [];
+    this.rudder = 0;
   }
 }
 
@@ -41,7 +43,7 @@ export class Boat extends Actor {
    */
   onInitialize(engine) {
     // this.angularVelocity = 0.5;
-    this.rotation = Math.PI / 8;
+    this.rotation = -Math.PI / 4;
     this.pos = vec(engine.halfDrawWidth, engine.halfDrawHeight);
     this.collider = new PolygonCollider({ points: hullPoints });
 
@@ -106,17 +108,17 @@ export class ResolveBoatForces extends System {
       // that means we neet to calculate the portion of the force that is parallel to the keel
 
       // create a vector that runs parallel to the boat called keel
-      const keel = vec(0, 1).rotate(body.rotation).normalize().negate();
+      const keel = vec(0, -1).rotate(body.rotation).normalize();
 
       // calculate the portion of the impulse that is parallel to the keel
       const parallel = impulse.dot(keel);
 
       const force = keel.scale(parallel);
 
-      Debug.drawLine(body.pos, body.pos.add(impulse), { color: Color.Black });
-      Debug.drawLine(body.pos, body.pos.add(force), {
-        color: Color.Red,
-      });
+      // Debug.drawLine(body.pos, body.pos.add(impulse), { color: Color.Black });
+      // Debug.drawLine(body.pos, body.pos.add(force), {
+      //   color: Color.Orange,
+      // });
 
       // apply the force to the boat
       body.vel = body.vel.add(force);
@@ -130,15 +132,17 @@ export class ResolveBoatForces extends System {
 export class SailComponent extends Component {
   constructor() {
     super();
-    this.impulse = vec(0, 0);
+    this.dragImpulse = vec(0, 0);
+    this.liftImpulse = vec(0, 0);
   }
 }
 
 export class Sail extends Actor {
   onInitialize(engine) {
-    this.pos = vec(0, 30);
+    this.anchor = vec(0.5, 0.0);
+    this.pos = vec(0, 0);
     this.collider = Shape.Box(10, 60);
-    this.angularVelocity = 1;
+    this.rotation = 0.0;
 
     this.graphics.use(
       new Rectangle({
@@ -170,7 +174,106 @@ export class SailPushesBoatSystem extends System {
       const boatEntity = sailEntity.parent;
       const boat = boatEntity.get(BoatComponent);
 
-      boat.impulses.push(sail.impulse);
+      boat.impulses.push(sail.dragImpulse);
+      boat.impulses.push(sail.liftImpulse);
+    }
+  }
+}
+
+export class DebugWindPushesSailSystem extends System {
+  systemType = SystemType.Draw;
+  static multiplier = 1;
+
+  /** @param {World} world */
+  initialize(world) {
+    this.sailsQuery = world.query([SailComponent, BodyComponent]);
+  }
+
+  update() {
+    const multiplier = DebugWindPushesSailSystem.multiplier;
+
+    for (const sailEntity of this.sailsQuery.entities) {
+      const sail = sailEntity.get(SailComponent);
+      const start = sailEntity.get(BodyComponent).transform.globalPos;
+
+      Debug.drawLine(start, start.add(sail.dragImpulse).scale(multiplier), {
+        color: Color.Red,
+      });
+      Debug.drawLine(start, start.add(sail.liftImpulse).scale(multiplier), {
+        color: Color.White,
+      });
+    }
+  }
+}
+
+export class WindPushesSailSystem extends System {
+  static sailDragCoefficient = 10;
+  static sailLiftCoefficient = 10;
+
+  systemType = SystemType.Update;
+
+  /**
+   * @param {World} world
+   */
+  initialize(world) {
+    this.windQuery = world.query([WindComponent]);
+    this.sailsQuery = world.query([SailComponent, BodyComponent]);
+  }
+
+  /** @param {number} delta */
+  update(delta) {
+    for (const windEntity of this.windQuery.entities) {
+      const wind = windEntity.get(WindComponent);
+      const windVector = vec(wind.speed, 0).rotate(wind.direction);
+
+      for (const sailEntity of this.sailsQuery.entities) {
+        const body = sailEntity.get(BodyComponent);
+        const sail = sailEntity.get(SailComponent);
+
+        const dragMagnitude = Math.abs(
+          Math.cos(wind.direction - body.rotation)
+        );
+
+        sail.dragImpulse = windVector.scale(
+          dragMagnitude * WindPushesSailSystem.sailDragCoefficient
+        );
+
+        // now we have to calculate the lift force on the sail
+        // the lift force is perpendicular to the wind direction
+        // the lift force is greatest when the sail is 15 degrees off the wind
+
+        // first calculate the vector perpendicular to the wind
+        let liftDirection = windVector.rotate(Math.PI / 2);
+
+        // now negate the lift direction if the sail is on the wrong side of the wind
+        const sailAngle = sailEntity.transform.globalRotation - Math.PI / 2;
+        const windAngle = wind.direction;
+        const angleDifference = sailAngle - windAngle;
+        console.log(
+          "angleDifference",
+          angleDifference,
+          "sailAngle",
+          sailAngle,
+          "windAngle",
+          windAngle
+        );
+        if (angleDifference > Math.PI || angleDifference < -Math.PI) {
+          liftDirection = liftDirection.negate();
+        }
+
+        // now calculate the magnitude of the lift force such that it is greatest when the sail is 15 degrees off the wind
+        const fifteenDegrees = Math.PI / 12;
+        const quarterTurn = Math.PI / 2;
+        const idealRotationOffset =
+          body.rotation + quarterTurn - fifteenDegrees;
+
+        const liftMagnitude = Math.abs(
+          Math.cos(wind.direction - idealRotationOffset)
+        );
+        sail.liftImpulse = liftDirection.scale(
+          liftMagnitude * WindPushesSailSystem.sailLiftCoefficient
+        );
+      }
     }
   }
 }
