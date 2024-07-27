@@ -34,12 +34,6 @@ export class ControlSystem extends System {
       boatBody.transform.rotation += 0.05;
     }
 
-    if (this.keyboard.isHeld(Keys.Left)) {
-      sailBody.transform.rotation += 0.05;
-    }
-    if (this.keyboard.isHeld(Keys.Right)) {
-      sailBody.transform.rotation -= 0.05;
-    }
     if (this.keyboard.isHeld(Keys.Up)) {
       sail.mainSheet += 1;
     }
