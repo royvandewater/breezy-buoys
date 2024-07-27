@@ -19,10 +19,10 @@ import { WindComponent } from "./wind.js";
 
 const hullPoints = [
   vec(0, 0),
-  vec(20, 80),
-  vec(20, 160),
-  vec(-20, 160),
-  vec(-20, 80),
+  vec(80, 20),
+  vec(160, 20),
+  vec(160, -20),
+  vec(80, -20),
 ];
 
 export class BoatComponent extends Component {
@@ -43,7 +43,8 @@ export class Boat extends Actor {
    */
   onInitialize(engine) {
     // this.angularVelocity = 0.5;
-    this.rotation = -Math.PI / 4;
+    // this.rotation = -Math.PI / 4;
+    this.rotation = 0;
     this.pos = vec(engine.halfDrawWidth, engine.halfDrawHeight);
     this.collider = new PolygonCollider({ points: hullPoints });
 
@@ -108,7 +109,7 @@ export class ResolveBoatForces extends System {
       // that means we neet to calculate the portion of the force that is parallel to the keel
 
       // create a vector that runs parallel to the boat called keel
-      const keel = vec(0, -1).rotate(body.rotation).normalize();
+      const keel = vec(1, 0).rotate(body.rotation).normalize();
 
       // calculate the portion of the impulse that is parallel to the keel
       const parallel = impulse.dot(keel);
@@ -137,20 +138,21 @@ export class SailComponent extends Component {
     super();
     this.dragImpulse = vec(0, 0);
     this.liftImpulse = vec(0, 0);
+    this.torque = 0;
   }
 }
 
 export class Sail extends Actor {
   onInitialize(engine) {
-    this.anchor = vec(0.5, 0.0);
+    this.anchor = vec(0.0, 0.5);
     this.pos = vec(0, 0);
-    this.collider = Shape.Box(10, 60);
+    this.collider = Shape.Box(60, 10);
     this.rotation = 0.0;
 
     this.graphics.use(
       new Rectangle({
-        width: 10,
-        height: 60,
+        width: 60,
+        height: 10,
         color: Color.White,
       })
     );
@@ -234,7 +236,7 @@ export class WindPushesSailSystem extends System {
         const sail = sailEntity.get(SailComponent);
 
         const dragMagnitude = Math.abs(
-          Math.cos(wind.direction - body.rotation)
+          Math.sin(wind.direction - body.rotation)
         );
 
         sail.dragImpulse = windVector.scale(
@@ -252,15 +254,7 @@ export class WindPushesSailSystem extends System {
         const sailAngle = sailEntity.transform.globalRotation - Math.PI / 2;
         const windAngle = wind.direction;
         const angleDifference = sailAngle - windAngle;
-        console.log(
-          "angleDifference",
-          angleDifference,
-          "sailAngle",
-          sailAngle,
-          "windAngle",
-          windAngle
-        );
-        if (angleDifference > Math.PI || angleDifference < -Math.PI) {
+        if (angleDifference < Math.PI && angleDifference > -Math.PI) {
           liftDirection = liftDirection.negate();
         }
 
@@ -271,12 +265,73 @@ export class WindPushesSailSystem extends System {
           body.rotation + quarterTurn - fifteenDegrees;
 
         const liftMagnitude = Math.abs(
-          Math.cos(wind.direction - idealRotationOffset)
+          Math.sin(wind.direction - idealRotationOffset)
         );
         sail.liftImpulse = liftDirection.scale(
           liftMagnitude * WindPushesSailSystem.sailLiftCoefficient
         );
       }
+    }
+  }
+}
+
+export class WindRotatesSailSystem extends System {
+  systemType = SystemType.Update;
+
+  static sailTorqueCoefficient = 0.1;
+
+  initialize(world) {
+    this.windQuery = world.query([WindComponent]);
+    this.sailsQuery = world.query([SailComponent, BodyComponent]);
+  }
+
+  update(delta) {
+    for (const windEntity of this.windQuery.entities) {
+      const wind = windEntity.get(WindComponent);
+      const windVector = vec(wind.speed, 0).rotate(wind.direction);
+
+      for (const sailEntity of this.sailsQuery.entities) {
+        const body = sailEntity.get(BodyComponent);
+        const sail = sailEntity.get(SailComponent);
+
+        // calculate the angle between the wind and the sail
+
+        // console.log("windVector", windVector, windVector.toAngle());
+        const angle = windVector.toAngle() - body.transform.globalRotation;
+
+        // apply a torque to the sail to rotate the trailing edge of the sail away from the wind
+
+        // calculate the torque. The torque is greatest when the sail is at a right angle to the wind
+        sail.torque =
+          Math.cos(angle + Math.PI / 2) *
+          WindRotatesSailSystem.sailTorqueCoefficient;
+
+        // figure out the direction of the torque
+        const sailAngle = sailEntity.transform.globalRotation;
+        const windAngle = wind.direction;
+        const angleDifference = sailAngle - windAngle;
+        if (angleDifference > Math.PI || angleDifference < -Math.PI) {
+          sail.torque *= -1;
+        }
+      }
+    }
+  }
+}
+
+export class ApplyTorqueToSailSystem extends System {
+  systemType = SystemType.Update;
+
+  initialize(world) {
+    this.sailsQuery = world.query([SailComponent, BodyComponent]);
+  }
+
+  update(delta) {
+    for (const sailEntity of this.sailsQuery.entities) {
+      const sail = sailEntity.get(SailComponent);
+      const body = sailEntity.get(BodyComponent);
+
+      // console.log("applying torque", sail.torque);
+      body.applyAngularImpulse(vec(0, 0), sail.torque);
     }
   }
 }

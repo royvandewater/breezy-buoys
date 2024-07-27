@@ -1,4 +1,5 @@
 import {
+  Actor,
   Component,
   System,
   SystemType,
@@ -6,6 +7,15 @@ import {
   BodyComponent,
   vec,
 } from "excalibur";
+
+export class Wind extends Actor {
+  /**
+   * @param {Engine} engine
+   */
+  onInitialize(engine) {
+    this.addComponent(new WindComponent());
+  }
+}
 
 export class WindComponent extends Component {
   constructor(options = { speed: 10, direction: 0 }) {
