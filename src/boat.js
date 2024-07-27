@@ -1,6 +1,8 @@
 import {
   Actor,
   BodyComponent,
+  clamp,
+  ColliderComponent,
   CollisionType,
   Color,
   Component,
@@ -26,10 +28,11 @@ const hullPoints = [
 ];
 
 export class BoatComponent extends Component {
-  constructor() {
+  constructor({ mainSailBlock = vec(0, 0) } = {}) {
     super();
     this.impulses = [];
     this.rudder = 0;
+    this.mainSailBlock = mainSailBlock;
   }
 }
 
@@ -55,7 +58,7 @@ export class Boat extends Actor {
       })
     );
 
-    this.addComponent(new BoatComponent());
+    this.addComponent(new BoatComponent({ mainSailBlock: vec(80, 0) }));
 
     this.addChild(new Sail());
   }
@@ -134,11 +137,13 @@ export class ResolveBoatForces extends System {
 }
 
 export class SailComponent extends Component {
-  constructor() {
+  constructor({ boomTip = vec(0, 0) } = {}) {
     super();
     this.dragImpulse = vec(0, 0);
     this.liftImpulse = vec(0, 0);
     this.torque = 0;
+    this.mainSheet = 100;
+    this.boomTip = boomTip;
   }
 }
 
@@ -157,7 +162,7 @@ export class Sail extends Actor {
       })
     );
 
-    this.addComponent(new SailComponent());
+    this.addComponent(new SailComponent({ boomTip: vec(60, 0) }));
   }
 }
 
@@ -322,13 +327,48 @@ export class ApplyTorqueToSailSystem extends System {
     for (const sailEntity of this.sailsQuery.entities) {
       const sail = sailEntity.get(SailComponent);
       const body = sailEntity.get(BodyComponent);
+      const boatBody = sailEntity.parent.get(BodyComponent);
+      const boat = sailEntity.parent.get(BoatComponent);
 
-      // console.log("applying torque", sail.torque);
-      // body.applyAngularImpulse(
-      //   vec(0, 0),
-      //   sail.torque * ApplyTorqueToSailSystem.sailTorqueLeverage
-      // );
+      // apply the torque to the sail
       body.transform.rotation += sail.torque;
+
+      const mast = body.transform.globalPos;
+
+      // get a point representing the tip of the boom
+      const tip = body.transform.globalPos.add(
+        sail.boomTip.rotate(body.transform.globalRotation)
+      );
+
+      // get the point where the mainsheet attaches the boom tip to the boat
+      const block = boatBody.transform.globalPos.add(
+        boat.mainSailBlock.rotate(boatBody.transform.globalRotation)
+      );
+
+      const boomLength = tip.sub(mast).size;
+      const mastToBlock = block.sub(mast).size;
+      const mainSheetLength = sail.mainSheet;
+
+      const a = boomLength;
+      const b = mastToBlock;
+      const c = mainSheetLength;
+
+      // Apply the law of cosines to calculate the maximum angle the boom can rotate
+      const maxC = Math.acos((a ** 2 + b ** 2 - c ** 2) / (2 * a * b));
+
+      // rotation is a number between 0 and 2PI. We need to make it between -PI and PI
+      const rotation =
+        ((body.transform.rotation + Math.PI) % (2 * Math.PI)) - Math.PI;
+      body.transform.rotation = clamp(rotation, -maxC, maxC);
+
+      // const distance = tip.sub(block).size;
+
+      // if (distance > sail.mainSheet) {
+      //   // if the tip of the boom is too far from the boat, rotate it towards the back of the boat
+      //   // such that the distance is the mainsheet length
+      //   const direction = tip.sub(block).normalize();
+      //   const target = block.add(direction.scale(sail.mainSheet));
+      // }
     }
   }
 }
