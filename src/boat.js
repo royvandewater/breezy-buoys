@@ -142,13 +142,15 @@ export class SailComponent extends Component {
     this.dragImpulse = vec(0, 0);
     this.liftImpulse = vec(0, 0);
     this.torque = 0;
-    this.mainSheet = 100;
 
     this.boomLength = boomLength;
     /** Is relative to the boat, not the sail */
     this.pivot = vec(0, 0); // the point around which the sail rotates
     /** Is relative to the boat, not the sail */
-    this.mainSheetBlock = this.mainSheetBlock;
+    this.mainSheetBlock = mainSheetBlock;
+
+    const blockDistance = this.mainSheetBlock.sub(this.pivot).size;
+    this.mainSheet = Math.sqrt(this.boomLength ** 2 + blockDistance ** 2) - 1;
   }
 
   get globalMainSheetBlock() {
@@ -280,11 +282,11 @@ export class WindPushesSailSystem extends System {
         // first calculate the vector perpendicular to the wind
         let liftDirection = windVector.rotate(Math.PI / 2);
 
-        // now negate the lift direction if the sail is on the wrong side of the wind
-        const sailAngle = sailEntity.transform.globalRotation - Math.PI / 2;
-        const windAngle = wind.direction;
-        const angleDifference = sailAngle - windAngle;
-        if (angleDifference < Math.PI && angleDifference > -Math.PI) {
+        // now negate the lift direction if it's on the same side of the sail as the main sheet block
+        const mainSheetBlock = sail.globalMainSheetBlock;
+        if (
+          mainSheetBlock.sub(body.transform.globalPos).dot(liftDirection) > 0
+        ) {
           liftDirection = liftDirection.negate();
         }
 
@@ -359,19 +361,20 @@ export class ApplyTorqueToSailSystem extends System {
       body.transform.rotation += sail.torque;
 
       // get the point where the mainsheet attaches the boom tip to the boat
-      const block = boatBody.transform.globalPos.add(
-        boat.mainSailBlock.rotate(boatBody.transform.globalRotation)
-      );
-
+      const block = sail.globalMainSheetBlock;
       const pivot = sail.globalPivot;
 
       const boomLength = sail.boomLength;
       const blockDistance = pivot.sub(block).size;
       const sheetLength = sail.mainSheet;
 
-      const a = boomLength;
-      const b = blockDistance;
-      const c = sheetLength;
+      const a = Math.round(boomLength);
+      const b = Math.round(blockDistance);
+      const minSheetLength = Math.abs(blockDistance - boomLength) + 1;
+      const maxSheetLength =
+        Math.sqrt(boomLength ** 2 + blockDistance ** 2) - 1;
+
+      const c = clamp(sheetLength, minSheetLength, maxSheetLength);
 
       // Apply the law of cosines to calculate the maximum angle the boom can rotate
       const maxC = Math.acos((a ** 2 + b ** 2 - c ** 2) / (2 * a * b));
@@ -379,6 +382,7 @@ export class ApplyTorqueToSailSystem extends System {
       // rotation is a number between 0 and 2PI. We need to make it between -PI and PI
       const rotation =
         ((body.transform.rotation + Math.PI) % (2 * Math.PI)) - Math.PI;
+
       body.transform.rotation = clamp(rotation, -maxC, maxC);
     }
   }
