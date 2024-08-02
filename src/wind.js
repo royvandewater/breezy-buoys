@@ -18,7 +18,7 @@ export class Wind extends Actor {
 }
 
 export class WindComponent extends Component {
-  constructor(options = { speed: 10, direction: 0 }) {
+  constructor(options = { speed: 100, direction: 0 }) {
     super();
     this.speed = options.speed;
     /** wind direction in radians */

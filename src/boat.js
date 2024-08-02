@@ -170,6 +170,11 @@ export class SailComponent extends Component {
       local.rotate(parent.transform.rotation)
     );
   }
+
+  get globalVelocity() {
+    const parent = this.owner.parent.get(BodyComponent);
+    return parent.vel;
+  }
 }
 
 export class Sail extends Actor {
@@ -244,8 +249,8 @@ export class DebugWindPushesSailSystem extends System {
 }
 
 export class WindPushesSailSystem extends System {
-  static sailDragCoefficient = 10;
-  static sailLiftCoefficient = 10;
+  static sailDragCoefficient = 1;
+  static sailLiftCoefficient = 1;
 
   systemType = SystemType.Update;
 
@@ -267,11 +272,14 @@ export class WindPushesSailSystem extends System {
         const body = sailEntity.get(BodyComponent);
         const sail = sailEntity.get(SailComponent);
 
+        const velocity = sail.globalVelocity;
+        const apparantWindVector = windVector.add(velocity.negate());
+
         const dragMagnitude = Math.abs(
-          Math.sin(wind.direction - body.rotation)
+          Math.sin(apparantWindVector.toAngle() - body.rotation)
         );
 
-        sail.dragImpulse = windVector.scale(
+        sail.dragImpulse = apparantWindVector.scale(
           dragMagnitude * WindPushesSailSystem.sailDragCoefficient
         );
 
@@ -280,7 +288,8 @@ export class WindPushesSailSystem extends System {
         // the lift force is greatest when the sail is 15 degrees off the wind
 
         // first calculate the vector perpendicular to the wind
-        let liftDirection = windVector.rotate(Math.PI / 2);
+        let liftDirection = apparantWindVector.rotate(Math.PI / 2);
+        let fifteenDegrees = Math.PI / 12;
 
         // now negate the lift direction if it's on the same side of the sail as the main sheet block
         const mainSheetBlock = sail.globalMainSheetBlock;
@@ -288,16 +297,16 @@ export class WindPushesSailSystem extends System {
           mainSheetBlock.sub(body.transform.globalPos).dot(liftDirection) > 0
         ) {
           liftDirection = liftDirection.negate();
+          fifteenDegrees = -fifteenDegrees;
         }
 
         // now calculate the magnitude of the lift force such that it is greatest when the sail is 15 degrees off the wind
-        const fifteenDegrees = Math.PI / 12;
         const quarterTurn = Math.PI / 2;
         const idealRotationOffset =
-          body.rotation + quarterTurn - fifteenDegrees;
+          body.rotation + quarterTurn + fifteenDegrees;
 
         const liftMagnitude = Math.abs(
-          Math.sin(wind.direction - idealRotationOffset)
+          Math.sin(apparantWindVector.toAngle() - idealRotationOffset)
         );
         sail.liftImpulse = liftDirection.scale(
           liftMagnitude * WindPushesSailSystem.sailLiftCoefficient
@@ -328,7 +337,11 @@ export class WindRotatesSailSystem extends System {
 
         // calculate the angle between the wind and the sail
 
-        let angle = body.transform.globalRotation - windVector.toAngle();
+        const velocity = sail.globalVelocity;
+        const rotation = body.transform.globalRotation;
+
+        const apparantWindVector = windVector.add(velocity.negate());
+        let angle = rotation - apparantWindVector.toAngle();
 
         // The angle is now a value between 0 & 2PI. We need to make it between -PI and PI
         angle = ((angle + Math.PI) % (2 * Math.PI)) - Math.PI;
