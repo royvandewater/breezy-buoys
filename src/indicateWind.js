@@ -11,7 +11,7 @@ import {
   World,
 } from "excalibur";
 
-import { BoatComponent } from "./boat.js";
+import { BoatComponent, SailComponent } from "./boat.js";
 import { WindComponent } from "./wind.js";
 
 export class WindGuage extends ScreenElement {
@@ -39,7 +39,7 @@ export class WindIndicator extends ScreenElement {
   #color;
 
   constructor({ color = Color.White } = {}) {
-    super({ pos: vec(50, 50) });
+    super({ pos: vec(100, 50) });
     this.#color = color;
   }
 
@@ -64,8 +64,8 @@ export class WindIndicator extends ScreenElement {
 export class IndicateWindSystem extends System {
   systemType = SystemType.Draw;
 
-  /** @type {Query<typeof BoatComponent | typeof BodyComponent>} */
-  #boats;
+  /** @type {Query<typeof SailComponent>} */
+  #sails;
 
   /** @type {Query<typeof WindComponent>} */
   #winds;
@@ -76,7 +76,7 @@ export class IndicateWindSystem extends System {
 
   /** @param {World} world */
   initialize(world) {
-    this.#boats = world.query([BoatComponent, BodyComponent]);
+    this.#sails = world.query([SailComponent]);
     this.#winds = world.query([WindComponent]);
 
     world.scene.add(this.#windIndicator);
@@ -85,13 +85,13 @@ export class IndicateWindSystem extends System {
 
   update(world) {
     const wind = this.#winds.entities[0].get(WindComponent);
-    const boatBody = this.#boats.entities[0].get(BodyComponent);
+    const sail = this.#sails.entities[0].get(SailComponent);
 
-    if (!wind || !boatBody) return;
+    if (!wind || !sail) return;
 
-    const boatVector = boatBody.vel;
-    const windVector = vec(1, 0).rotate(wind.direction);
-    const apparentWindVector = windVector.sub(boatVector);
+    const velocity = sail.globalVelocity;
+    const windVector = vec(wind.speed, 0).rotate(wind.direction);
+    const apparentWindVector = windVector.add(velocity.negate());
 
     this.#windIndicator.body.rotation = windVector.negate().toAngle();
 

@@ -3,8 +3,6 @@
 
 ## TODO
 
-* Visualize wind direction
-* Visualize apparent wind direction
 * Visualize boat's current speed
 * Add in buoys to race around
 * Track laps
@@ -21,3 +19,5 @@
 * Move the mainsheet attachment point from the boat component to the sail component
   (This would allow a single boat to have multiple sails with their own attachment points)
 * Add apparent wind
+* Visualize wind direction
+* Visualize apparent wind direction

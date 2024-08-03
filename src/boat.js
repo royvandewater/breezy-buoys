@@ -273,13 +273,13 @@ export class WindPushesSailSystem extends System {
         const sail = sailEntity.get(SailComponent);
 
         const velocity = sail.globalVelocity;
-        const apparantWindVector = windVector.add(velocity.negate());
+        const apparentWindVector = windVector.add(velocity.negate());
 
         const dragMagnitude = Math.abs(
-          Math.sin(apparantWindVector.toAngle() - body.rotation)
+          Math.sin(apparentWindVector.toAngle() - body.rotation)
         );
 
-        sail.dragImpulse = apparantWindVector.scale(
+        sail.dragImpulse = apparentWindVector.scale(
           dragMagnitude * WindPushesSailSystem.sailDragCoefficient
         );
 
@@ -288,7 +288,7 @@ export class WindPushesSailSystem extends System {
         // the lift force is greatest when the sail is 15 degrees off the wind
 
         // first calculate the vector perpendicular to the wind
-        let liftDirection = apparantWindVector.rotate(Math.PI / 2);
+        let liftDirection = apparentWindVector.rotate(Math.PI / 2);
         let fifteenDegrees = Math.PI / 12;
 
         // now negate the lift direction if it's on the same side of the sail as the main sheet block
@@ -306,7 +306,7 @@ export class WindPushesSailSystem extends System {
           body.rotation + quarterTurn + fifteenDegrees;
 
         const liftMagnitude = Math.abs(
-          Math.sin(apparantWindVector.toAngle() - idealRotationOffset)
+          Math.sin(apparentWindVector.toAngle() - idealRotationOffset)
         );
         sail.liftImpulse = liftDirection.scale(
           liftMagnitude * WindPushesSailSystem.sailLiftCoefficient
@@ -340,8 +340,8 @@ export class WindRotatesSailSystem extends System {
         const velocity = sail.globalVelocity;
         const rotation = body.transform.globalRotation;
 
-        const apparantWindVector = windVector.add(velocity.negate());
-        let angle = rotation - apparantWindVector.toAngle();
+        const apparentWindVector = windVector.add(velocity.negate());
+        let angle = rotation - apparentWindVector.toAngle();
 
         // The angle is now a value between 0 & 2PI. We need to make it between -PI and PI
         angle = ((angle + Math.PI) % (2 * Math.PI)) - Math.PI;
