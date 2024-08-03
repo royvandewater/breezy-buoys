@@ -32,7 +32,6 @@ const game = new Engine({
   },
 });
 game.start();
-game.toggleDebug();
 
 game.currentScene.add(new Wind());
 game.currentScene.add(new Boat());
