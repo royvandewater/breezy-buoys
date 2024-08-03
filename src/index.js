@@ -22,6 +22,7 @@ import {
   WindRotatesSailSystem,
 } from "./boat.js";
 import { ControlSystem } from "./controls.js";
+import { IndicateWindSystem } from "./indicateWind.js";
 
 const game = new Engine({
   displayMode: DisplayMode.FillScreen,
@@ -45,3 +46,4 @@ world.systemManager.addSystem(ControlSystem);
 world.systemManager.addSystem(WindRotatesSailSystem);
 world.systemManager.addSystem(ApplyTorqueToSailSystem);
 world.systemManager.addSystem(DebugWindPushesSailSystem);
+// world.systemManager.addSystem(IndicateWindSystem);
