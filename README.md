@@ -3,15 +3,15 @@
 
 ## TODO
 
-* Remove lift force wind hits the luff of the sail before the leech
 * Visualize wind direction
 * Visualize apparent wind direction
-* Visualize current speed
-* Have sail area be a factor in lift & drag forces
+* Visualize boat's current speed
 * Add in buoys to race around
 * Track laps
 * Add controller support
 * Add touch support
+* Have sail area be a factor in lift & drag forces
+* Remove lift force wind hits the leech of the sail before the luff
 
 ## Done
 
