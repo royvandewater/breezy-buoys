@@ -3,7 +3,6 @@
 
 ## TODO
 
-* Visualize boat's current speed
 * Add in buoys to race around
 * Track laps
 * Add controller support
@@ -13,6 +12,7 @@
 
 ## Done
 
+* Visualize boat's current speed
 * Force sail lift force to always be away from the mainsheet
 * Add rotational force from wind to sail
 * Control sail via mainsheet instead of direct control

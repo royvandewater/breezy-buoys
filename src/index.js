@@ -23,8 +23,10 @@ import {
 } from "./boat.js";
 import { ControlSystem } from "./controls.js";
 import { IndicateWindSystem } from "./indicateWind.js";
+import { IndicateSpeedSystem } from "./indicateSpeed.js";
 
 const game = new Engine({
+  canvasElementId: "game",
   displayMode: DisplayMode.FillScreen,
   fixedUpdateFps: 30,
   physics: {
@@ -47,3 +49,4 @@ world.systemManager.addSystem(WindRotatesSailSystem);
 world.systemManager.addSystem(ApplyTorqueToSailSystem);
 world.systemManager.addSystem(DebugWindPushesSailSystem);
 world.systemManager.addSystem(IndicateWindSystem);
+world.systemManager.addSystem(IndicateSpeedSystem);

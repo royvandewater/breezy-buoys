@@ -1,5 +1,4 @@
 import {
-  BodyComponent,
   Circle,
   Color,
   Polygon,
@@ -11,18 +10,19 @@ import {
   World,
 } from "excalibur";
 
-import { BoatComponent, SailComponent } from "./boat.js";
+import { SailComponent } from "./boat.js";
 import { WindComponent } from "./wind.js";
 
 export class WindGuage extends ScreenElement {
   constructor() {
-    super({ pos: vec(50, 50) });
+    super({ pos: vec(55, 55) });
   }
 
   /**
    * @param {Engine} engine
    */
   onInitialize(engine) {
+    this.anchor = vec(0.5, 0.5);
     this.graphics.use(
       new Circle({
         radius: 50,
@@ -39,7 +39,7 @@ export class WindIndicator extends ScreenElement {
   #color;
 
   constructor({ color = Color.White } = {}) {
-    super({ pos: vec(100, 50) });
+    super({ pos: vec(55, 55), anchor: vec(0.5, 0.5) });
     this.#color = color;
   }
 
@@ -79,6 +79,7 @@ export class IndicateWindSystem extends System {
     this.#sails = world.query([SailComponent]);
     this.#winds = world.query([WindComponent]);
 
+    world.scene.add(this.#guage);
     world.scene.add(this.#windIndicator);
     world.scene.add(this.#apparentWindIndicator);
   }
