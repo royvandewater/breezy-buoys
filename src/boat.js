@@ -45,6 +45,7 @@ export class Boat extends Actor {
    * @param {Engine} engine
    */
   onInitialize(engine) {
+    this.anchor = vec(0.8, 0.5);
     // this.angularVelocity = 0.5;
     // this.rotation = -Math.PI / 4;
     this.rotation = 0;
@@ -180,7 +181,7 @@ export class SailComponent extends Component {
 export class Sail extends Actor {
   onInitialize(engine) {
     this.anchor = vec(0.0, 0.5); // assumes a pivot of vec(0, 0)
-    this.pos = vec(0, 0);
+    this.pos = vec(-30, 0);
     this.collider = Shape.Box(60, 10);
     this.rotation = 0.0;
 
