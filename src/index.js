@@ -13,6 +13,7 @@ import {
   Boat,
   DebugWindPushesSailSystem,
   ResolveBoatForces,
+  RudderRotatesBoatSystem,
   SailPushesBoatSystem,
   WindPushesSailSystem,
   WindRotatesSailSystem,
@@ -45,6 +46,7 @@ world.systemManager.addSystem(ControlSystem);
 world.systemManager.addSystem(WindRotatesSailSystem);
 world.systemManager.addSystem(ApplyTorqueToSailSystem);
 world.systemManager.addSystem(DebugWindPushesSailSystem);
+world.systemManager.addSystem(RudderRotatesBoatSystem);
 world.systemManager.addSystem(IndicateWindSystem);
 world.systemManager.addSystem(IndicateSpeedSystem);
 world.systemManager.addSystem(SpawnBuoysSystem);

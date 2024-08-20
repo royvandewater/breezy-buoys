@@ -61,6 +61,7 @@ export class Boat extends Actor {
     this.addComponent(new BoatComponent({ mainSailBlock: vec(80, 0) }));
 
     this.addChild(new Sail());
+    this.addChild(new Rudder({ pos: vec(30, 0) }));
   }
 }
 
@@ -211,6 +212,42 @@ export class Sail extends Actor {
     this.addComponent(
       new SailComponent({ boomLength: 60, mainSheetBlock: vec(30, 0) })
     );
+  }
+}
+
+export class RudderComponent extends Component {
+  get globalVelocity() {
+    const parent = this.owner.parent.get(BodyComponent);
+    return parent.vel;
+  }
+
+  get rotation() {
+    const body = this.owner.get(BodyComponent);
+    return body.transform.rotation;
+  }
+}
+
+export class Rudder extends Actor {
+  /**
+   * @param {{pos: Vector}} pos
+   */
+  constructor({ pos }) {
+    super();
+    this.pos = pos;
+  }
+
+  onInitialize(engine) {
+    this.anchor = vec(0.0, 0.5);
+
+    this.graphics.use(
+      new Rectangle({
+        width: 20,
+        height: 5,
+        color: Color.Black,
+      })
+    );
+
+    this.addComponent(new RudderComponent());
   }
 }
 
@@ -412,5 +449,33 @@ export class ApplyTorqueToSailSystem extends System {
 
       body.transform.rotation = clamp(rotation, -maxC, maxC);
     }
+  }
+}
+
+export class RudderRotatesBoatSystem extends System {
+  systemType = SystemType.Update;
+
+  static rudderCoefficient = 0.0005;
+
+  initialize(world) {
+    this.ruddersQuery = world.query([RudderComponent, BodyComponent]);
+    this.boatsQuery = world.query([BoatComponent, BodyComponent]);
+  }
+
+  update(delta) {
+    const rudder = this.ruddersQuery.entities[0].get(RudderComponent);
+    const boat = this.boatsQuery.entities[0].get(BodyComponent);
+    let rotation = rudder.rotation;
+
+    if (rotation > Math.PI) {
+      rotation -= Math.PI * 2;
+    }
+
+    const amountToRotate =
+      rotation *
+      rudder.globalVelocity.size *
+      RudderRotatesBoatSystem.rudderCoefficient;
+
+    boat.transform.rotation -= amountToRotate;
   }
 }

@@ -2,14 +2,13 @@ import {
   BodyComponent,
   Keys,
   Keyboard,
-  Scene,
   System,
   SystemType,
   Query,
   World,
   clamp,
 } from "excalibur";
-import { BoatComponent, SailComponent } from "./boat.js";
+import { RudderComponent, SailComponent } from "./boat.js";
 
 export class ControlSystem extends System {
   systemType = SystemType.Update;
@@ -20,8 +19,8 @@ export class ControlSystem extends System {
   /** @type {Keyboard}*/
   #keyboard;
 
-  /** @type {Query<typeof BoatComponent | typeof BodyComponent>} */
-  #boatQuery;
+  /** @type {Query<typeof RudderComponent | typeof BodyComponent>} */
+  #rudderQuery;
 
   /** @type {Query<typeof SailComponent | typeof BodyComponent>} */
   #sailQuery;
@@ -29,7 +28,7 @@ export class ControlSystem extends System {
   /** @param {World} world */
   initialize(world) {
     this.#keyboard = world.scene.input.keyboard;
-    this.#boatQuery = world.query([BoatComponent, BodyComponent]);
+    this.#rudderQuery = world.query([RudderComponent, BodyComponent]);
     this.#sailQuery = world.query([SailComponent, BodyComponent]);
 
     this.#toggleDebug = () => world.scene.engine.toggleDebug();
@@ -40,7 +39,7 @@ export class ControlSystem extends System {
    * @param {number} delta
    * */
   preupdate(world, delta) {
-    const boatBody = this.#boatQuery.entities[0].get(BodyComponent);
+    const rudder = this.#rudderQuery.entities[0].get(BodyComponent);
     const sail = this.#sailQuery.entities[0].get(SailComponent);
 
     if (this.#keyboard.wasPressed(Keys.F1)) {
@@ -48,11 +47,19 @@ export class ControlSystem extends System {
     }
 
     if (this.#keyboard.isHeld(Keys.A)) {
-      boatBody.transform.rotation -= 0.05;
+      rudder.transform.rotation += 0.05;
     }
     if (this.#keyboard.isHeld(Keys.D)) {
-      boatBody.transform.rotation += 0.05;
+      rudder.transform.rotation -= 0.05;
     }
+
+    let rotation = rudder.transform.rotation;
+    if (rotation > Math.PI) {
+      rotation = rotation - 2 * Math.PI;
+    }
+
+    const rudderLimit = Math.PI / 2 - Math.PI / 6;
+    rudder.transform.rotation = clamp(rotation, -rudderLimit, rudderLimit);
 
     if (this.#keyboard.isHeld(Keys.Up)) {
       sail.mainSheet += 1;

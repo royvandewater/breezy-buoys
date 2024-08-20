@@ -3,7 +3,6 @@
 
 ## TODO
 
-* Make rudder authority a function of boat speed
 * Track laps
 * Track lap time
 * Penalize hitting buoys
@@ -16,6 +15,7 @@
 
 ## Done
 
+* Make rudder authority a function of boat speed
 * Make taking in mainsheet use the current sail position as the mainsheet amount (Taking in mainsheet should always immediately pull the sail in)
 * Add in buoys to race around
 * Visualize boat's current speed
