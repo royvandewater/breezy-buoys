@@ -2,7 +2,6 @@ import {
   Actor,
   BodyComponent,
   clamp,
-  ColliderComponent,
   CollisionType,
   Color,
   Component,
@@ -172,9 +171,25 @@ export class SailComponent extends Component {
     );
   }
 
+  get globalBoomTip() {
+    // const windVector = vec(wind.speed, 0).rotate(wind.direction);
+    const body = this.owner.get(BodyComponent);
+    const boom = vec(this.boomLength, 0).rotate(body.transform.rotation);
+
+    return this.globalPivot.add(boom);
+  }
+
   get globalVelocity() {
     const parent = this.owner.parent.get(BodyComponent);
     return parent.vel;
+  }
+
+  /**
+   * Returns the minimun length the mainsheet can be to maintain the current rotation. It's
+   * really just the distance between the end of the boom and the mainsheet block
+   */
+  get currentMainSheetMin() {
+    return this.globalBoomTip.sub(this.globalMainSheetBlock).size;
   }
 }
 
@@ -368,8 +383,6 @@ export class ApplyTorqueToSailSystem extends System {
     for (const sailEntity of this.sailsQuery.entities) {
       const sail = sailEntity.get(SailComponent);
       const body = sailEntity.get(BodyComponent);
-      const boatBody = sailEntity.parent.get(BodyComponent);
-      const boat = sailEntity.parent.get(BoatComponent);
 
       // apply the torque to the sail
       body.transform.rotation += sail.torque;

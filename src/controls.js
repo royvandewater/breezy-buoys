@@ -41,7 +41,6 @@ export class ControlSystem extends System {
    * */
   preupdate(world, delta) {
     const boatBody = this.#boatQuery.entities[0].get(BodyComponent);
-    const sailBody = this.#sailQuery.entities[0].get(BodyComponent);
     const sail = this.#sailQuery.entities[0].get(SailComponent);
 
     if (this.#keyboard.wasPressed(Keys.F1)) {
@@ -59,7 +58,9 @@ export class ControlSystem extends System {
       sail.mainSheet += 1;
     }
     if (this.#keyboard.isHeld(Keys.Down)) {
-      sail.mainSheet -= 1;
+      const mainSheet = Math.min(sail.mainSheet, sail.currentMainSheetMin);
+
+      sail.mainSheet = mainSheet - 1;
     }
     sail.mainSheet = clamp(sail.mainSheet, 25, 100);
   }

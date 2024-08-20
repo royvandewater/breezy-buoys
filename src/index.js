@@ -1,16 +1,12 @@
+/// <reference types="../esm_cache/excalibur.d.ts" />
+
 import {
-  Actor,
-  Color,
   DefaultPhysicsConfig,
   DisplayMode,
   Engine,
-  Entity,
-  Polygon,
-  PolygonCollider,
   SolverStrategy,
-  vec,
 } from "excalibur";
-import { Wind, WindComponent } from "./wind.js";
+import { Wind } from "./wind.js";
 import {
   ApplyDragToBoatSystem,
   ApplyTorqueToSailSystem,
