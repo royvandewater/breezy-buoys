@@ -66,7 +66,7 @@ export class Boat extends Actor {
 }
 
 export class ApplyDragToBoatSystem extends System {
-  static dragCoefficient = 0.01;
+  static dragCoefficient = 0.005;
 
   systemType = SystemType.Update;
 
@@ -123,11 +123,11 @@ export class ResolveBoatForces extends System {
 
       // calculate the portion of the impulse that is perpendicular to the keel
       const perpendicular = impulse.dot(keel.rotate(Math.PI / 2));
-      // reduce the perpendicular force by 90% to simulate the keel's resistance to sideways forces
+      // reduce the perpendicular force by 99% to simulate the keel's resistance to sideways forces
       const perpendicularForce = keel
         .rotate(Math.PI / 2)
         .scale(perpendicular)
-        .scale(0.1);
+        .scale(0.05);
 
       body.vel = body.vel.add(perpendicularForce);
 
