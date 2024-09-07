@@ -21,7 +21,7 @@ import {
 import { ControlSystem } from "./controls.js";
 import { IndicateWindSystem } from "./indicateWind.js";
 import { IndicateSpeedSystem } from "./indicateSpeed.js";
-import { SpawnBuoysSystem } from "./buoys.js";
+import { Spawn3RandomBuoysSystem } from "./buoys.js";
 
 const game = new Engine({
   canvasElementId: "game",
@@ -49,4 +49,4 @@ world.systemManager.addSystem(DebugWindPushesSailSystem);
 world.systemManager.addSystem(RudderRotatesBoatSystem);
 world.systemManager.addSystem(IndicateWindSystem);
 world.systemManager.addSystem(IndicateSpeedSystem);
-world.systemManager.addSystem(SpawnBuoysSystem);
+world.systemManager.addSystem(Spawn3RandomBuoysSystem);

@@ -3,6 +3,7 @@
 
 ## TODO
 
+* Shift wind to come from the north
 * Track laps
 * Track lap time
 * Penalize hitting buoys
