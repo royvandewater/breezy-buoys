@@ -2,6 +2,7 @@
 
 import { DisplayMode, Engine, SolverStrategy } from "excalibur";
 import { Wind } from "./wind.js";
+
 import {
   ApplyDragToBoatSystem,
   ApplyTorqueToSailSystem,
@@ -26,7 +27,6 @@ const game = new Engine({
     solver: SolverStrategy.Realistic,
   },
 });
-game.start();
 
 game.currentScene.add(new Wind());
 game.currentScene.add(new Boat());
@@ -44,3 +44,5 @@ world.systemManager.addSystem(RudderRotatesBoatSystem);
 world.systemManager.addSystem(IndicateWindSystem);
 world.systemManager.addSystem(IndicateSpeedSystem);
 world.systemManager.addSystem(Spawn3RandomBuoysSystem);
+
+game.start();
