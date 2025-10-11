@@ -1,11 +1,6 @@
 /// <reference types="../esm_cache/excalibur.d.ts" />
 
-import {
-  DefaultPhysicsConfig,
-  DisplayMode,
-  Engine,
-  SolverStrategy,
-} from "excalibur";
+import { DisplayMode, Engine, SolverStrategy } from "excalibur";
 import { Wind } from "./wind.js";
 import {
   ApplyDragToBoatSystem,
@@ -28,7 +23,6 @@ const game = new Engine({
   displayMode: DisplayMode.FillScreen,
   fixedUpdateFps: 30,
   physics: {
-    ...DefaultPhysicsConfig,
     solver: SolverStrategy.Realistic,
   },
 });
