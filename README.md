@@ -2,11 +2,11 @@
 
 ## TODO
 
-- Wake (larger when going faster)
 - Pan the camera to follow the boat and allow for larger maps
 - Islands
 - Wind gusts
 - Wind animation (without using Excalibur's particles so that we can use vector fields)
+- Wake (larger when going faster)
 - Delivery jobs
 - Sail curve animation
 - Add controller support

@@ -44,6 +44,8 @@ export class Boat extends Actor {
    * @param {Engine} engine
    */
   onInitialize(engine) {
+    engine.currentScene.camera.strategy.lockToActor(this);
+
     this.anchor = vec(0.8, 0.5);
     // this.angularVelocity = 0.5;
     // this.rotation = -Math.PI / 4;
