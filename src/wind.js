@@ -47,11 +47,9 @@ export class Wind extends Actor {
       },
     });
     engine.currentScene.world.add(this.particleEmitter);
-  }
 
-  onPostUpdate(engine, delta) {
     const wind = this.get(WindComponent);
-    this.vel = this.vel.add(wind.windVector.scale(delta));
+    this.vel = this.vel.add(wind.windVector);
   }
 }
 
