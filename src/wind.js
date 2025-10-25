@@ -56,9 +56,9 @@ export class Wind extends Actor {
 
   /**
    * @param {Engine} engine
-   * @param {number} delta
+   * @param {number} _delta
    */
-  onPreUpdate(engine, delta) {
+  onPreUpdate(engine, _delta) {
     this.particleEmitter.pos = engine.currentScene.camera.pos.sub(
       new Vector(engine.halfDrawWidth, engine.halfDrawHeight)
     );
