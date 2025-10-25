@@ -16,7 +16,7 @@ import {
   vec,
   Vector,
 } from "excalibur";
-import { Wind, WindComponent } from "./wind.js";
+import { WindComponent } from "./wind.js";
 
 const hullPoints = [
   vec(0, 0),
@@ -64,14 +64,6 @@ export class Boat extends Actor {
 
     this.addChild(new Sail());
     this.addChild(new Rudder({ pos: vec(30, 0) }));
-  }
-
-  onPreUpdate(engine, delta) {
-    /** @type {Wind} */
-    const wind = engine.currentScene.actors.find((a) => a instanceof Wind);
-    wind.particleEmitter.pos = this.pos.sub(
-      new Vector(engine.halfDrawWidth, engine.halfDrawHeight)
-    );
   }
 }
 

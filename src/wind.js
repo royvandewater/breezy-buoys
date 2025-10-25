@@ -7,6 +7,8 @@ import {
   EmitterType,
 } from "excalibur";
 
+/** @typedef {import("excalibur").Engine} Engine */
+
 const PARTICLE_EMIT_INTERVAL = 100000000000;
 const WIND_SPEED = 100;
 const WIND_VARIANCE = 10;
@@ -50,6 +52,16 @@ export class Wind extends Actor {
 
     const wind = this.get(WindComponent);
     this.vel = this.vel.add(wind.windVector);
+  }
+
+  /**
+   * @param {Engine} engine
+   * @param {number} delta
+   */
+  onPreUpdate(engine, delta) {
+    this.particleEmitter.pos = engine.currentScene.camera.pos.sub(
+      new Vector(engine.halfDrawWidth, engine.halfDrawHeight)
+    );
   }
 }
 
