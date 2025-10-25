@@ -175,9 +175,11 @@ export class SailComponent extends Component {
   }
 
   get globalBoomTip() {
-    // const windVector = vec(wind.speed, 0).rotate(wind.direction);
     const body = this.owner.get(BodyComponent);
-    const boom = vec(this.boomLength, 0).rotate(body.transform.rotation);
+    const parent = this.owner.parent.get(BodyComponent);
+
+    // Calculate boom vector using the sail's global rotation
+    const boom = vec(this.boomLength, 0).rotate(body.transform.globalRotation);
 
     return this.globalPivot.add(boom);
   }
