@@ -2,11 +2,11 @@
 
 ## TODO
 
-- Wind animation
 - Wake (larger when going faster)
 - Pan the camera to follow the boat and allow for larger maps
 - Islands
 - Wind gusts
+- Wind animation (without using Excalibur's particles so that we can use vector fields)
 - Delivery jobs
 - Sail curve animation
 - Add controller support
@@ -21,6 +21,7 @@
 
 ## Done
 
+- Wind animation
 - Make rudder authority a function of boat speed
 - Make taking in mainsheet use the current sail position as the mainsheet amount (Taking in mainsheet should always immediately pull the sail in)
 - Add in buoys to race around
