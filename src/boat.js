@@ -16,7 +16,7 @@ import {
   vec,
   Vector,
 } from "excalibur";
-import { WindComponent } from "./wind.js";
+import { Wind, WindComponent } from "./wind.js";
 
 const hullPoints = [
   vec(0, 0),
@@ -64,6 +64,14 @@ export class Boat extends Actor {
 
     this.addChild(new Sail());
     this.addChild(new Rudder({ pos: vec(30, 0) }));
+  }
+
+  onPreUpdate(engine, delta) {
+    /** @type {Wind} */
+    const wind = engine.currentScene.actors.find((a) => a instanceof Wind);
+    wind.particleEmitter.pos = this.pos.sub(
+      new Vector(engine.halfDrawWidth, engine.halfDrawHeight)
+    );
   }
 }
 
@@ -192,7 +200,7 @@ export class SailComponent extends Component {
    * really just the distance between the end of the boom and the mainsheet block
    */
   get currentMainSheetMin() {
-    return this.globalBoomTip.sub(this.globalMainSheetBlock).size;
+    return this.globalBoomTip.sub(this.globalMainSheetBlock).magnitude;
   }
 }
 
@@ -374,6 +382,10 @@ export class WindPushesSailSystem extends System {
 export class WindRotatesSailSystem extends System {
   systemType = SystemType.Update;
 
+  /**
+   * How much torque the wind applies to the sail. Larger numbers means
+   * the sail will rotate more quickly with the wind.
+   */
   static sailTorqueCoefficient = 0.1;
 
   initialize(world) {
@@ -391,7 +403,6 @@ export class WindRotatesSailSystem extends System {
         const sail = sailEntity.get(SailComponent);
 
         // calculate the angle between the wind and the sail
-
         const velocity = sail.globalVelocity;
         const rotation = body.transform.globalRotation;
 
