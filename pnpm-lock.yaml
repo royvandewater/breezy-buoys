@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       excalibur:
-        specifier: 0.32.0-alpha.1535
-        version: 0.32.0-alpha.1535
+        specifier: 0.30.0
+        version: 0.30.0
     devDependencies:
       live-server:
         specifier: 1.2.2
@@ -188,8 +188,8 @@ packages:
   event-stream@3.3.4:
     resolution: {integrity: sha512-QHpkERcGsR0T7Qm3HNJSyXKEEj8AHNxkY3PK8TS2KJvQ7NiSHe3DDpwVKKtoYprL/AreyzFBeIkBIWChAqn60g==}
 
-  excalibur@0.32.0-alpha.1535:
-    resolution: {integrity: sha512-NPppPQ8k9gUMETsesOv4ZIs75eyr5wCHtWXA8vEe/4m+pXKwKVGTJSRu3Hl6+39M13Ca4iItpqKUp14mq8hc+w==}
+  excalibur@0.30.0:
+    resolution: {integrity: sha512-hZAbydJmxjMCFYGZbGclNjKNdAVJfX7D1HFyUNcb+jHLTHqp1RnzJpqoPXviwYQS0Ruh1oNGBXQKb4c75WUlOg==}
 
   expand-brackets@2.1.4:
     resolution: {integrity: sha512-w/ozOKR9Obk3qoWeY/WDi6MFta9AoMR+zud60mdnbniMcBxRuFJyDt2LdX/14A1UABeqk+Uk+LDfUpvoGKppZA==}
@@ -881,7 +881,7 @@ snapshots:
       stream-combiner: 0.0.4
       through: 2.3.8
 
-  excalibur@0.32.0-alpha.1535: {}
+  excalibur@0.30.0: {}
 
   expand-brackets@2.1.4:
     dependencies:
