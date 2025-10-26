@@ -17,7 +17,7 @@ import { TerrainGenerator } from "./terrainGenerator.js";
 export class ChunkManagerSystem extends System {
   // Chunk configuration
   static chunkSize = 1024; // pixels per chunk (after scaling)
-  static chunkTextureSize = 512; // texture resolution
+  static chunkTextureSize = 1024; // texture resolution (matches chunkSize for crisp edges)
   static viewDistance = 3; // chunks in each direction (increased for earlier loading)
   static scale = 3;
   static threshold = 0.25; // Threshold for the perlin noise to determine if the pixel is ocean or beach. Lower numbers mean more land.
