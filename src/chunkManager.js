@@ -19,8 +19,8 @@ export class ChunkManagerSystem extends System {
   static chunkSize = 1024; // pixels per chunk (after scaling)
   static chunkTextureSize = 512; // texture resolution
   static viewDistance = 2; // chunks in each direction
-  static scale = 8;
-  static threshold = 0.58;
+  static scale = 3;
+  static threshold = 0.25; // Threshold for the perlin noise to determine if the pixel is ocean or beach. Lower numbers mean more land.
   static seed = 12345;
 
   systemType = SystemType.Update;
@@ -66,16 +66,8 @@ export class ChunkManagerSystem extends System {
     const requiredChunks = new Set();
     const viewDist = ChunkManagerSystem.viewDistance;
 
-    for (
-      let cx = boatChunkX - viewDist;
-      cx <= boatChunkX + viewDist;
-      cx++
-    ) {
-      for (
-        let cy = boatChunkY - viewDist;
-        cy <= boatChunkY + viewDist;
-        cy++
-      ) {
+    for (let cx = boatChunkX - viewDist; cx <= boatChunkX + viewDist; cx++) {
+      for (let cy = boatChunkY - viewDist; cy <= boatChunkY + viewDist; cy++) {
         requiredChunks.add(`${cx},${cy}`);
       }
     }
@@ -125,11 +117,9 @@ export class ChunkManagerSystem extends System {
     // Position the chunk at its world coordinates
     // Chunks are positioned at their center
     const worldX =
-      chunkX * ChunkManagerSystem.chunkSize +
-      ChunkManagerSystem.chunkSize / 2;
+      chunkX * ChunkManagerSystem.chunkSize + ChunkManagerSystem.chunkSize / 2;
     const worldY =
-      chunkY * ChunkManagerSystem.chunkSize +
-      ChunkManagerSystem.chunkSize / 2;
+      chunkY * ChunkManagerSystem.chunkSize + ChunkManagerSystem.chunkSize / 2;
 
     // Load and add to scene
     imageSource.load().then(() => {

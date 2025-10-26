@@ -1,10 +1,6 @@
 /// <reference types="../esm_cache/excalibur.d.ts" />
 
-import {
-  DisplayMode,
-  Engine,
-  SolverStrategy,
-} from "excalibur";
+import { DisplayMode, Engine, SolverStrategy } from "excalibur";
 import { Wind } from "./wind.js";
 
 import {
@@ -49,6 +45,6 @@ world.systemManager.addSystem(DebugWindPushesSailSystem);
 world.systemManager.addSystem(RudderRotatesBoatSystem);
 world.systemManager.addSystem(IndicateWindSystem);
 world.systemManager.addSystem(IndicateSpeedSystem);
-world.systemManager.addSystem(Spawn3RandomBuoysSystem);
+// world.systemManager.addSystem(Spawn3RandomBuoysSystem);
 
 game.start();
