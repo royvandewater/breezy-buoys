@@ -4,11 +4,8 @@ import {
   DisplayMode,
   Engine,
   SolverStrategy,
-  ImageSource,
-  ImageFiltering,
 } from "excalibur";
 import { Wind } from "./wind.js";
-import { WorldMap } from "./worldMap.js";
 
 import {
   ApplyDragToBoatSystem,
@@ -25,18 +22,7 @@ import { ControlSystem } from "./controls.js";
 import { IndicateWindSystem } from "./indicateWind.js";
 import { IndicateSpeedSystem } from "./indicateSpeed.js";
 import { Spawn3RandomBuoysSystem } from "./buoys.js";
-
-import { base64BitMapFromPerlin } from "./base64BitMapFromPerlin.js";
-
-const base64BitMap = base64BitMapFromPerlin({
-  size: 2048,
-  scale: 8,
-  threshold: 0.58,
-});
-const imageSource = new ImageSource(base64BitMap, {
-  filtering: ImageFiltering.Blended,
-});
-await imageSource.load();
+import { ChunkManagerSystem } from "./chunkManager.js";
 
 const game = new Engine({
   canvasElementId: "game",
@@ -47,11 +33,11 @@ const game = new Engine({
   },
 });
 
-game.currentScene.add(new WorldMap({ imageSource, scale: 0.5 }));
 game.currentScene.add(new Wind());
 game.currentScene.add(new Boat());
 
 const world = game.currentScene.world;
+world.systemManager.addSystem(ChunkManagerSystem);
 world.systemManager.addSystem(WindPushesSailSystem);
 world.systemManager.addSystem(SailPushesBoatSystem);
 world.systemManager.addSystem(ResolveBoatForces);

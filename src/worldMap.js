@@ -11,11 +11,16 @@ export class WorldMap extends Actor {
     super();
     this.imageSource = imageSource;
     this.scaleFactor = scale;
+    // Set z-index to render behind everything else
+    this.z = -100;
   }
 
   onInitialize(engine) {
     this.graphics.use(this.imageSource.toSprite());
-    this.pos = vec(engine.halfDrawWidth, engine.halfDrawHeight);
+    // Only set initial position if not already set by chunk manager
+    if (this.pos.x === 0 && this.pos.y === 0) {
+      this.pos = vec(engine.halfDrawWidth, engine.halfDrawHeight);
+    }
     this.scale = vec(this.scaleFactor, this.scaleFactor);
   }
 }

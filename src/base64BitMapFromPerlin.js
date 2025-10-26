@@ -6,11 +6,17 @@ import { Colors } from "./colors.js";
  * @param {number} options.size - The size of the bitmap.
  * @param {number} options.scale - The scale of the bitmap.
  * @param {number} options.threshold - The threshold for the perlin noise to determine if the pixel is ocean or beach. Lower numbers mean more land.
+ * @param {number} options.offsetX - X offset in world space (for chunk positioning)
+ * @param {number} options.offsetY - Y offset in world space (for chunk positioning)
+ * @param {number} options.seed - Seed for deterministic generation
  */
 export const base64BitMapFromPerlin = ({
   size = 512,
   scale = 5,
   threshold = 0.4,
+  offsetX = 0,
+  offsetY = 0,
+  seed = 0,
 } = {}) => {
   const width = size;
   const height = width;
@@ -27,7 +33,10 @@ export const base64BitMapFromPerlin = ({
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const value = perlin((x / width) * scale, (y / height) * scale);
+      // Apply offset to sample from different parts of noise space
+      const sampleX = (x / width + offsetX) * scale;
+      const sampleY = (y / height + offsetY) * scale;
+      const value = perlin(sampleX, sampleY, seed);
       const adjustedValue = value < threshold ? 0 : 1;
       const color = lerpColor(Colors.ocean, Colors.beach, adjustedValue);
       const index = (y * width + x) * 4;
