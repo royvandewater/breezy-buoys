@@ -30,7 +30,7 @@ import { base64BitMapFromPerlin } from "./base64BitMapFromPerlin.js";
 
 const base64BitMap = base64BitMapFromPerlin(1024);
 const imageSource = new ImageSource(base64BitMap, {
-  filtering: ImageFiltering.Pixel,
+  filtering: ImageFiltering.Blended,
 });
 await imageSource.load();
 

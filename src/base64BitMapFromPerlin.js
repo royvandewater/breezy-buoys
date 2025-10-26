@@ -9,7 +9,7 @@ const threshold = 0.4;
 /**
  * Generates a base64 encoded bitmap from perlin noise.
  */
-export const base64BitMapFromPerlin = (size = 512) => {
+export const base64BitMapFromPerlin = (size = 512, scale = 5) => {
   const width = size;
   const height = width;
 
@@ -25,7 +25,7 @@ export const base64BitMapFromPerlin = (size = 512) => {
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const value = perlin(x / width, y / height);
+      const value = perlin((x / width) * scale, (y / height) * scale);
       const adjustedValue = value < threshold ? 0 : 1;
       const color = lerpColor(Colors.ocean, Colors.beach, adjustedValue);
       const index = (y * width + x) * 4;
