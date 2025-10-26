@@ -1,4 +1,23 @@
 /**
+ * Generate a grid of random gradient vectors for Perlin noise.
+ * Each gradient is a random unit vector.
+ *
+ * @param {number} size - The number of gradient vectors to generate
+ * @returns {Array<[number, number]>} Array of 2D unit vectors
+ */
+function generateGradientGrid(size = 512 * 512) {
+  const grid = new Array(size);
+  for (let i = 0; i < size; i++) {
+    const angle = Math.random() * 2 * Math.PI;
+    grid[i] = [Math.cos(angle), Math.sin(angle)];
+  }
+  return grid;
+}
+
+// Initialize the gradient grid for Perlin noise
+const grid = generateGradientGrid();
+
+/**
  * Perlin noise implementation.
  *
  * This function generates a perlin noise value for a given 2D point.
@@ -27,8 +46,16 @@ export const perlin = (x, y) => {
   return lerp(lerp(n0, n1, t), lerp(n2, n3, t), u);
 };
 
+function vec2(x, y) {
+  return [x, y];
+}
+
 function dot(a, b) {
   return a[0] * b[0] + a[1] * b[1];
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
 }
 
 function smoothstep(a, b, x) {

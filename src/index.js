@@ -1,6 +1,12 @@
 /// <reference types="../esm_cache/excalibur.d.ts" />
 
-import { DisplayMode, Engine, SolverStrategy } from "excalibur";
+import {
+  DisplayMode,
+  Engine,
+  SolverStrategy,
+  ImageSource,
+  ImageFiltering,
+} from "excalibur";
 import { Wind } from "./wind.js";
 import { WorldMap } from "./worldMap.js";
 
@@ -20,6 +26,14 @@ import { IndicateWindSystem } from "./indicateWind.js";
 import { IndicateSpeedSystem } from "./indicateSpeed.js";
 import { Spawn3RandomBuoysSystem } from "./buoys.js";
 
+import { base64BitMapFromPerlin } from "./base64BitMapFromPerlin.js";
+
+const base64BitMap = base64BitMapFromPerlin(1024);
+const imageSource = new ImageSource(base64BitMap, {
+  filtering: ImageFiltering.Pixel,
+});
+await imageSource.load();
+
 const game = new Engine({
   canvasElementId: "game",
   displayMode: DisplayMode.FillScreen,
@@ -29,7 +43,7 @@ const game = new Engine({
   },
 });
 
-game.currentScene.add(new WorldMap());
+game.currentScene.add(new WorldMap({ imageSource }));
 game.currentScene.add(new Wind());
 game.currentScene.add(new Boat());
 

@@ -1,4 +1,6 @@
+import { Color } from "excalibur";
+
 export const Colors = {
-  ocean: "#6495ed",
-  beach: "#ffd700",
+  ocean: Color.fromHex("#6495ed"),
+  beach: Color.fromHex("#ffd700"),
 };
