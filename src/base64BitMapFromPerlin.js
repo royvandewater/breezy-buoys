@@ -1,15 +1,17 @@
 import { perlin } from "./perlin.js";
 import { Colors } from "./colors.js";
 /**
- * The threshold for the perlin noise to determine if the pixel is ocean or beach. Lower numbers
- * mean more land
- **/
-const threshold = 0.4;
-
-/**
  * Generates a base64 encoded bitmap from perlin noise.
+ * @param {Object} options - The options for the base64 bit map from perlin noise.
+ * @param {number} options.size - The size of the bitmap.
+ * @param {number} options.scale - The scale of the bitmap.
+ * @param {number} options.threshold - The threshold for the perlin noise to determine if the pixel is ocean or beach. Lower numbers mean more land.
  */
-export const base64BitMapFromPerlin = (size = 512, scale = 5) => {
+export const base64BitMapFromPerlin = ({
+  size = 512,
+  scale = 5,
+  threshold = 0.4,
+} = {}) => {
   const width = size;
   const height = width;
 

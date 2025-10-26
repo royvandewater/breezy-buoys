@@ -28,7 +28,11 @@ import { Spawn3RandomBuoysSystem } from "./buoys.js";
 
 import { base64BitMapFromPerlin } from "./base64BitMapFromPerlin.js";
 
-const base64BitMap = base64BitMapFromPerlin(1024);
+const base64BitMap = base64BitMapFromPerlin({
+  size: 2048,
+  scale: 8,
+  threshold: 0.58,
+});
 const imageSource = new ImageSource(base64BitMap, {
   filtering: ImageFiltering.Blended,
 });
@@ -43,7 +47,7 @@ const game = new Engine({
   },
 });
 
-game.currentScene.add(new WorldMap({ imageSource }));
+game.currentScene.add(new WorldMap({ imageSource, scale: 0.5 }));
 game.currentScene.add(new Wind());
 game.currentScene.add(new Boat());
 
