@@ -2,6 +2,7 @@
 
 import { DisplayMode, Engine, SolverStrategy } from "excalibur";
 import { Wind } from "./wind.js";
+import { WorldMap } from "./worldMap.js";
 
 import {
   ApplyDragToBoatSystem,
@@ -28,6 +29,7 @@ const game = new Engine({
   },
 });
 
+game.currentScene.add(new WorldMap());
 game.currentScene.add(new Wind());
 game.currentScene.add(new Boat());
 

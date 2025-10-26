@@ -2,7 +2,6 @@
 
 ## TODO
 
-- Pan the camera to follow the boat and allow for larger maps
 - Islands
 - Wind gusts
 - Wind animation (without using Excalibur's particles so that we can use vector fields)
@@ -21,6 +20,7 @@
 
 ## Done
 
+- Pan the camera to follow the boat and allow for larger maps
 - Wind animation
 - Make rudder authority a function of boat speed
 - Make taking in mainsheet use the current sail position as the mainsheet amount (Taking in mainsheet should always immediately pull the sail in)
