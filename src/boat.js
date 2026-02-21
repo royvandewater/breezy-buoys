@@ -438,12 +438,11 @@ export class WindRotatesSailSystem extends System {
         const body = sailEntity.get(BodyComponent);
         const sail = sailEntity.get(SailComponent);
 
-        // calculate the angle between the wind and the sail
-        const velocity = sail.globalVelocity;
+        // calculate the angle between the sail and the TRUE wind (not apparent wind)
+        // This makes the sail naturally want to align with true wind, which is less optimal
+        // when sailing upwind, requiring active mainsheet trimming
         const rotation = body.transform.globalRotation;
-
-        const apparentWindVector = windVector.add(velocity.negate());
-        let angle = rotation - apparentWindVector.toAngle();
+        let angle = rotation - windVector.toAngle();
 
         // The angle is now a value between 0 & 2PI. We need to make it between -PI and PI
         angle = ((angle + Math.PI) % (2 * Math.PI)) - Math.PI;
