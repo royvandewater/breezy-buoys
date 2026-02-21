@@ -24,4 +24,12 @@ html, body, main, canvas {
   font-size: 2rem;
 }
 
+#lap-counter {
+  position: fixed;
+  top: 1em;
+  right: 1em;
+  text-align: end;
+  font-size: 2rem;
+}
+
 

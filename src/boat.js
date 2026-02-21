@@ -17,6 +17,7 @@ import {
   Vector,
 } from "excalibur";
 import { WindComponent } from "./wind.js";
+import { LapComponent } from "./buoys.js";
 
 const hullPoints = [
   vec(0, 0),
@@ -61,6 +62,7 @@ export class Boat extends Actor {
     );
 
     this.addComponent(new BoatComponent({ mainSailBlock: vec(80, 0) }));
+    this.addComponent(new LapComponent());
 
     this.addChild(new Sail());
     this.addChild(new Rudder({ pos: vec(30, 0) }));
