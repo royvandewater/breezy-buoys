@@ -506,6 +506,11 @@ export class RudderRotatesBoatSystem extends System {
 
   static rudderCoefficient = 0.0005;
 
+  constructor() {
+    super();
+    this.momentumAccumulator = 0;
+  }
+
   initialize(world) {
     this.ruddersQuery = world.query([RudderComponent, BodyComponent]);
     this.boatsQuery = world.query([BoatComponent, BodyComponent]);
@@ -525,6 +530,24 @@ export class RudderRotatesBoatSystem extends System {
       rudder.globalVelocity.size *
       RudderRotatesBoatSystem.rudderCoefficient;
 
-    boat.transform.rotation -= amountToRotate;
+    // Track momentum over time to avoid rapid toggling during tacking
+    const boatForward = vec(1, 0).rotate(boat.transform.rotation);
+    const velocity = rudder.globalVelocity;
+    const forwardDot = boatForward.dot(velocity);
+
+    // Accumulate momentum: positive when moving forward, negative when moving backward
+    // Decay toward zero slowly (0.98 = retains 98% per frame), but add current motion
+    this.momentumAccumulator *= 0.98;
+    this.momentumAccumulator += forwardDot;
+
+    // Only reverse rudder after sustained backward momentum
+    // Positive momentum = forward rudder, negative momentum = reversed rudder
+    if (this.momentumAccumulator < -500) {
+      // Sustained backward momentum - reversed rudder operation
+      boat.transform.rotation -= amountToRotate;
+    } else {
+      // Forward momentum or neutral - normal rudder operation
+      boat.transform.rotation += amountToRotate;
+    }
   }
 }
