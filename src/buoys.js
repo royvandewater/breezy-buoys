@@ -166,10 +166,32 @@ export class Spawn3RandomBuoysSystem extends System {
     const width = xMax - xMin;
     const height = yMax - yMin;
 
+    const minDistance = 300;
+    const buoyPositions = [];
+
     for (let i = 0; i < 3; i++) {
-      const x = xMin + Math.random() * width;
-      const y = yMin + Math.random() * height;
-      world.scene.add(new Buoy(i, vec(x, y)));
+      let attempts = 0;
+      let position;
+      let validPosition = false;
+
+      while (!validPosition && attempts < 100) {
+        const x = xMin + Math.random() * width;
+        const y = yMin + Math.random() * height;
+        position = vec(x, y);
+
+        validPosition = true;
+        for (const existingPos of buoyPositions) {
+          if (position.distance(existingPos) < minDistance) {
+            validPosition = false;
+            break;
+          }
+        }
+
+        attempts++;
+      }
+
+      buoyPositions.push(position);
+      world.scene.add(new Buoy(i, position));
     }
   }
 
