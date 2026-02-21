@@ -67,6 +67,48 @@ export class Boat extends Actor {
   }
 }
 
+export class WindPushesBoatSystem extends System {
+  static driftCoefficient = 0.1;
+
+  systemType = SystemType.Update;
+
+  /** @param {World} world */
+  initialize(world) {
+    this.boatQuery = world.query([BodyComponent, BoatComponent]);
+    this.windQuery = world.query([WindComponent]);
+  }
+
+  /** @param {number} delta */
+  update(delta) {
+    const driftCoefficient = WindPushesBoatSystem.driftCoefficient;
+
+    for (const windEntity of this.windQuery.entities) {
+      const wind = windEntity.get(WindComponent);
+      const windVector = vec(wind.speed, 0).rotate(wind.direction);
+
+      for (const boatEntity of this.boatQuery.entities) {
+        const body = boatEntity.get(BodyComponent);
+        const boat = boatEntity.get(BoatComponent);
+
+        // Calculate the angle between the boat's heading and the wind direction
+        const boatHeading = body.rotation;
+        const windDirection = wind.direction;
+        let angleDifference = boatHeading - windDirection;
+
+        // Normalize angle to -PI to PI range
+        angleDifference = ((angleDifference + Math.PI) % (2 * Math.PI)) - Math.PI;
+
+        // Drift is proportional to |cos(angle)| - maximum when aligned with wind (0° or 180°), minimum when perpendicular (90°)
+        const driftMagnitude = Math.abs(Math.cos(angleDifference)) * driftCoefficient;
+
+        // Apply drift force in the downwind direction
+        const driftForce = windVector.scale(driftMagnitude);
+        boat.impulses.push(driftForce);
+      }
+    }
+  }
+}
+
 export class ApplyDragToBoatSystem extends System {
   static dragCoefficient = 0.005;
 

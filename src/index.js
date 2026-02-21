@@ -11,6 +11,7 @@ import {
   ResolveBoatForces,
   RudderRotatesBoatSystem,
   SailPushesBoatSystem,
+  WindPushesBoatSystem,
   WindPushesSailSystem,
   WindRotatesSailSystem,
 } from "./boat.js";
@@ -34,6 +35,7 @@ game.currentScene.add(new Boat());
 const world = game.currentScene.world;
 world.systemManager.addSystem(WindPushesSailSystem);
 world.systemManager.addSystem(SailPushesBoatSystem);
+world.systemManager.addSystem(WindPushesBoatSystem);
 world.systemManager.addSystem(ResolveBoatForces);
 world.systemManager.addSystem(ApplyDragToBoatSystem);
 world.systemManager.addSystem(WindRotatesSailSystem);
