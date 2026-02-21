@@ -19,6 +19,7 @@ import { ControlSystem } from "./controls.js";
 import { IndicateWindSystem } from "./indicateWind.js";
 import { IndicateSpeedSystem } from "./indicateSpeed.js";
 import { IndicateLapSystem } from "./indicateLap.js";
+import { IndicateBuoySystem } from "./indicateBuoy.js";
 import { Spawn3RandomBuoysSystem, TrackLapProgressSystem } from "./buoys.js";
 
 const game = new Engine({
@@ -47,6 +48,7 @@ world.systemManager.addSystem(RudderRotatesBoatSystem);
 world.systemManager.addSystem(IndicateWindSystem);
 world.systemManager.addSystem(IndicateSpeedSystem);
 world.systemManager.addSystem(IndicateLapSystem);
+world.systemManager.addSystem(IndicateBuoySystem);
 world.systemManager.addSystem(Spawn3RandomBuoysSystem);
 world.systemManager.addSystem(TrackLapProgressSystem);
 
